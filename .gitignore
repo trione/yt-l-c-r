@@ -1,0 +1,4 @@
+__pycache__/
+channel/
+client_secrets*
+*.pyc
