@@ -1,4 +1,4 @@
-# coding=utf8
+# coding=utf-8
 import datetime
 import dateutil.parser as timeparser
 
