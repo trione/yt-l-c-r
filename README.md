@@ -21,29 +21,22 @@ Youtubeのライブ配信中に視聴者がリアルタイムで投稿・閲覧�
 #### 必要なこと
 * このリポジトリを download または clone する  
 * freeze.txt の module を installする  
-
-'''
-pip install -r freeze.txt
-'''  
+'pip install -r freeze.txt'  
 
 ## ツールの起動
 #### 起動方法
 * コマンドライン(コマンドプロンプト)から以下のコマンドを実行する  
-
-'''
-python gui.py
-'''  
-
+'python gui.py'  
 * 画面が立ち上がる  
 
 #### 使用方法
 * Youtubeで ライブ配信済み かつ ライブチャットのリプレイが見られる 動画 を開きます  
-* GUIのテキスト入力欄に その動画のID を ctrl + v で 貼り付けます  
+* GUIのテキスト入力欄に その動画のID を ctrl + v で 貼り付けます
 <details><summary>[動画のIDとは]</summary>
 例えば、ブラウザのURL欄に v=aB3defghi_k のような部分があります<br>
 それが、動画のIDであり、v=[動画のID]となっています<br>
 この場合、動画のIDは aB3defghi_k に当たります<br>
-</details>  
+</details>
 * すぐ下のボタンを押すとライブチャットのリプレイの抽出作業を始めます  
 * 抽出作業が終わると、その結果のグラフが表示されます  
 終わっても、グラフが表示されない場合は、Graphボタンを押すことでグラフが表示されます  
