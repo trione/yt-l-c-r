@@ -37,9 +37,9 @@ Youtubeのライブ配信中に視聴者がリアルタイムで投稿・閲覧�
 終わっても、グラフが表示されない場合は、Graphボタンを押すことでグラフが表示されます  
 
 <details><summary><strong>動画のID</strong>とは</summary>
-例えば、ブラウザのURL欄に v=__aB3defghi_k__ のような部分があります<br>
-それが、__動画のID__ であり、v=__動画のID__ となっています<br>
-即ち、この場合の __動画のID__ は __aB3defghi_k__ に当たります
+例えば、ブラウザのURL欄に v=<strong>aB3defghi_k</strong> のような部分があります<br>
+それが、<strong>動画のID</strong> であり、v=<strong>動画のID</strong> となっています<br>
+即ち、この場合の <strong>動画のID</strong> は <strong>aB3defghi_k</strong> に当たります
 </details>
 
 ###### ※使用上の注意  
