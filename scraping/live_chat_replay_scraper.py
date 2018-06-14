@@ -9,13 +9,13 @@ current_video_id = None
 
 def scraping_video_details(video_id=None):
 	if video_id is None: return None
+	global current_video_id
 	if video_id != current_video_id:
 		video_page.open_by_id(video_id=video_id)
 	
 	details = video_page.get_video_details()
 	
 	if details is not None:
-		global current_video_id
 		current_video_id = details.video_id
 
 	return details
