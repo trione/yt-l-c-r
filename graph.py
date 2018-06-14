@@ -9,57 +9,27 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pandas import Series
 
-from scraping import video_page
-from scraping import live_chat_replay_page as chat_page
+from scraping import live_chat_replay_scraper as chat_scraper
 
 
 chat_list = None
 
 def plot(video_id=None):
-
+	title = video_id
 	s_time = time.time()
 
-	make_chat_list(video_id)
+	global chat_list
+	chat_list = chat_scraper.make_chat_list(video_id)
 	
 	d = time.time() - s_time
 	print("s-w:"+str(d))
 
-	global chat_list
 	chat_freq_data = count_chats_by_time(chat_list=chat_list)
 
 	d = time.time() - s_time
 	print("s-e:"+str(d))
 
-
 	display_graph(chat_freq_data, video_id, "bar")
-
-
-def make_chat_list(video_id=None):
-	title = video_id
-
-	global chat_list
-	chat_list = []
-
-	continuation = video_page.pick_out_chat_continuation(video_id=video_id)
-
-	while(True):
-		if continuation is None:
-			print("continuation is Invalid or This is End")
-			break
-		
-		continuation, chats = chat_page.get_contents(continuation=continuation)
-		
-		if chats is None or len(chats) == 0:
-			print("chat is End")
-			break
-		
-		chat_list.extend(chats)
-		# break
-		
-		tsp = chats[-1]
-		print("time:"+tsp.timestamp_text+", list_len:"+str(len(chat_list)))
-
-		time.sleep(0.01)
 
 
 def display_graph(data=None, title="No Name", kind="bar"):
@@ -69,7 +39,7 @@ def display_graph(data=None, title="No Name", kind="bar"):
 		data = count_chats_by_time(chat_list)
 
 	data.plot(title=title, kind=kind)
-	plt.show()
+	plt.show(block=False)
 
 	print(kind)
 
@@ -77,9 +47,9 @@ def display_graph(data=None, title="No Name", kind="bar"):
 
 
 def count_chats_by_time(chat_list=None):
-	freq_series = Series()
-
 	if chat_list is None: return None
+
+	freq_series = Series()
 
 	for chat in chat_list:
 
