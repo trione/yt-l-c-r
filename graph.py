@@ -16,6 +16,7 @@ from scraping import live_chat_replay_page as chat_page
 chat_list = None
 
 def plot(video_id=None):
+
 	s_time = time.time()
 
 	make_chat_list(video_id)
