@@ -15,7 +15,9 @@ from scraping import live_chat_replay_scraper as chat_scraper
 chat_list = None
 
 def plot(video_id=None):
+	video_details = chat_scraper.scraping_video_details(video_id=video_id)
 	title = video_id
+
 	s_time = time.time()
 
 	global chat_list
@@ -29,7 +31,7 @@ def plot(video_id=None):
 	d = time.time() - s_time
 	print("s-e:"+str(d))
 
-	display_graph(chat_freq_data, video_id, "bar")
+	display_graph(chat_freq_data, title, "bar")
 
 
 def display_graph(data=None, title="No Name", kind="bar"):
