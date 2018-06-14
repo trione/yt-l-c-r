@@ -59,8 +59,8 @@ video_id_entry = ttk.Entry(content, width=11, textvariable=video_ids)
 video_id_entry.bind("<Button-3><ButtonRelease-3>", show_entry_popup)
 
 
-Button = ttk.Button(content, text="Button")
-Button.bind("<Button-1>", entry_video_id)
+run_button = ttk.Button(content, text="Run")
+run_button.bind("<Button-1>", entry_video_id)
 
 
 show_graph_btn = ttk.Button(content, text="Graph")
@@ -70,7 +70,7 @@ show_graph_btn.bind("<Button-1>", show_chat_freq_graph)
 label.grid(column=1, row=1, sticky=E)
 vid_label.grid(column=2, row=1, sticky=(W, E))
 video_id_entry.grid(column=3, row=1, sticky=(W, E))
-Button.grid(column=3, row=2, sticky=W)
+run_button.grid(column=3, row=2, sticky=W)
 show_graph_btn.grid(column=3, row=3, sticky=W)
 
 
