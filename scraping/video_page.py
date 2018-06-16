@@ -5,8 +5,6 @@ import json
 
 from scraping.item import video_details
 
-page = None
-
 def open_by_id(video_id=None):
 	if video_id is None : return None
 
@@ -14,15 +12,29 @@ def open_by_id(video_id=None):
 	uri = 'https://www.youtube.com/watch?v=' + video_id
 	headers={'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'}
 
-	global page
 	resp, page = h.request(uri=uri, headers=headers)
 	page = page.decode(encoding='utf-8')
 
 	return page
 
+def open_by_id_minutes(video_id=None, minutes=0):
+	if video_id is None : return None
+
+	str_min = str(minutes)+"m"
+
+	uri = 'https://www.youtube.com/watch?v=' + video_id
+	uri = uri + '&t=' + str_min
+	headers={'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'}
+
+	h = httplib2.Http()
+	resp, page = h.request(uri=uri, headers=headers)
+	page = page.decode(encoding='utf-8')
+
+	return page
+
+
 #return str type OF live_chat_replay's continuation
-def pick_out_chat_continuation():
-	global page
+def pick_out_chat_continuation(page=None):
 	if page is None: return None
 
 	pattern = r'"continuation":"(op2w0w[a-zA-Z0-9_%]+)"'
@@ -35,8 +47,7 @@ def pick_out_chat_continuation():
 	return conti
 
 
-def get_video_details():
-	global page
+def get_video_details(page=None):
 	if page is None: return None
 
 	pattern = r'({"responseContext":.+})\);'
