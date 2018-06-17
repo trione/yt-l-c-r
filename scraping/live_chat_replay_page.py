@@ -7,7 +7,7 @@ from scraping.item import live_chat
 
 
 def open_by_continuation(continuation=None):
-	if continuation is None : 
+	if continuation is None :
 		return None
 
 	h = httplib2.Http()
@@ -21,9 +21,9 @@ def open_by_continuation(continuation=None):
 	return context
 
 
-# find responseContext json 
+# find responseContext json
 def find_context_json(context=None):
-	""" 
+	"""
 		Returns:
 			dict: response context json as dict
 	"""
@@ -37,14 +37,14 @@ def find_context_json(context=None):
 	if m is None: return None
 
 	json_str = m.group(1)
-	
+
 	json_data = json.loads(json_str)
 
-	
+
 	return json_data
 
 
-# return nextContinuation, live_chat_items 
+# return nextContinuation, live_chat_items
 #                          liveChatTextMessageRenderers
 def pick_live_chat_items_from_continuation_json(json_data=None):
 	if json_data is None:
@@ -55,17 +55,17 @@ def pick_live_chat_items_from_continuation_json(json_data=None):
 
 
 	liveChatCont = json_data["continuationContents"]["liveChatContinuation"]
-	
+
 	# liveChatContinuation > continuations
 	# find next continuation in continuations json dict
 	cont_dict = liveChatCont["continuations"]
-	
+
 	next_continuation = None
 	for cont in cont_dict:
 		if "liveChatReplayContinuationData" in cont:
 			next_continuation = cont["liveChatReplayContinuationData"]["continuation"]
 			break
-	
+
 	# liveChatContinuation > actions
 	# find chat data in actions json dict
 	actions = liveChatCont["actions"]
@@ -81,19 +81,29 @@ def pick_live_chat_items_from_continuation_json(json_data=None):
 	# JSON :dict to LiveChat :object
 	for act in actions:
 		replay_item_act = act["replayChatItemAction"]["actions"][0]
-		add_item_act_item = replay_item_act["addChatItemAction"]["item"]
+		add_item_act_item = None
 
-		if "liveChatTextMessageRenderer" in add_item_act_item:
-			chat_item = add_item_act_item["liveChatTextMessageRenderer"]
-			chat_items.append(live_chat.LiveChat(chat_item))
-	
+		# normal live chat
+		if "addChatItemAction" in replay_item_act:
+			add_item_act_item = replay_item_act["addChatItemAction"]["item"]
+			if "liveChatTextMessageRenderer" in add_item_act_item:
+				chat_item = add_item_act_item["liveChatTextMessageRenderer"]
+				chat_items.append(live_chat.LiveChat(chat_item))
+
+		# super live chat
+		elif "addLiveChatTickerItemAction" in replay_item_act:
+			add_ticker_act_item = replay_item_act["addLiveChatTickerItemAction"]["item"]
+			if "liveChatTickerPaidMessageItemRenderer" in add_ticker_act_item:
+				super_chat_item = add_ticker_act_item["liveChatTickerPaidMessageItemRenderer"]
+				chat_items.append(live_chat.SuperLiveChat(super_chat_item))
+
 
 	return next_continuation, chat_items
 
 
 def get_contents(continuation=None):
 	"""	https://www.youtube.com/live_chat_replay contents
-		
+
 		Args:
 			continuation (str): query param string for live_chat_replay
 
