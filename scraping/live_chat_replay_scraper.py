@@ -26,7 +26,6 @@ def make_chat_list(video_id=None):
 	seconds = int(video_details.length_seconds)
 	minutes = int(seconds / 60)
 	
-	chat_list = []
 	
 	start_min = 0
 	d = 10
@@ -59,6 +58,7 @@ def make_chat_list(video_id=None):
 		print("done:"+str(done_num)+"/"+str(ftrs_num))
 
 	# get result of working
+	chat_list = []
 	for ftr in ftrs:
 		chats = ftr.result()
 		chat_list.extend(chats)
@@ -125,7 +125,7 @@ def remove_surplus_from_chats(chats=None, end_minute=None):
 		rim = int(ri.minutes())
 		le = chats[left]
 		lem = int(le.minutes())
-		print("end_min:"+str(end_minute)+", index:"+str(index)+", m:"+str(m)+", l:r="+str(left)+":"+str(right)+", lm:rm="+str(rim)+":"+str(lem))
+		print("end_min:"+str(end_minute)+", index:"+str(index)+", m:"+str(m)+", l:r="+str(left)+":"+str(right)+", lm:rm="+str(lem)+":"+str(rim))
 		# just end_minute
 		if m == end_minute and s == 0:
 			print("Find Just End Min")
