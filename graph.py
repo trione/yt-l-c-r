@@ -26,7 +26,7 @@ def plot(video_id=None):
 	d = time.time() - s_time
 	print("s-w:"+str(d))
 
-	chat_freq_data = count_chats_by_time(chat_list=chat_list)
+	chat_freq_data = count_chats_by_minutes(chat_list=chat_list)
 
 	d = time.time() - s_time
 	print("s-e:"+str(d))
@@ -38,42 +38,29 @@ def display_graph(data=None, title="No Name", kind="bar"):
 	if data is None :
 		global chat_list
 		if chat_list is None: return None
-		data = count_chats_by_time(chat_list)
+		data = count_chats_by_minutes(chat_list)
+	num = len(data)
 
 	data.plot(title=title, kind=kind)
 	plt.show(block=False)
-
+	
 	print(kind)
-
 	return True
 
 
-def count_chats_by_time(chat_list=None):
+def count_chats_by_minutes(chat_list=None):
 	if chat_list is None: return None
-
-	freq_series = Series()
-
+	d = {}
 	for chat in chat_list:
+		m = int(chat.minutes())
+		if m not in d.keys():
+			print("new Key:"+str(m))
+			d[m] = 0
+		d[m] += 1
 
-		# date_time = chat.datetime()		
-		# t_tuple = date_time.timetuple()
+	df = pd.DataFrame(list(d.values()), columns=['numbers'])
 
-		# h = t_tuple[3]
-		# m = t_tuple[4]
-		# s = t_tuple[5]
-
-		mins = chat.minutes()
-		m = int(mins)
-
-		if m not in freq_series.index:
-			print("new Series:"+str(m))
-			freq_series = freq_series.append(Series(index=[m]))
-			freq_series[m] = 0
-
-		freq_series[m] += 1
-
-	return freq_series
-
+	return df
 
 # input video_id from command line
 # $ python graph.py [youtube video_id]
