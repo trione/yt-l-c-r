@@ -10,7 +10,7 @@ def scraping_video_details(video_id=None):
 	if video_id is None: return None
 	p = video_page.open_by_id(video_id=video_id)
 	details = video_page.get_video_details(p)
-	
+
 	if details is not None:
 		current_video_id = details.video_id
 
@@ -25,13 +25,13 @@ def make_chat_list(video_id=None):
 	print(video_details)
 	seconds = int(video_details.length_seconds)
 	minutes = int(seconds / 60)
-	
-	
+
+
 	start_min = 0
 	d = 10
 	end_min = start_min + d
 	rear_min = minutes + 1
-	
+
 	# run worker
 	ftrs = []
 	executor = futures.ThreadPoolExecutor()
@@ -74,7 +74,7 @@ def run_making_chat_list_worker(video_id=None, start_minute=None, end_minute=Non
 
 	while(continuation is not None):
 		continuation, chats = chat_page.get_contents(continuation=continuation)
-		
+
 		if continuation is None:
 			print("continuation is Invalid or This is End")
 			break
@@ -92,13 +92,13 @@ def run_making_chat_list_worker(video_id=None, start_minute=None, end_minute=Non
 				chats = []
 			else :
 				chats = remove_surplus_from_chats(chats, end_minute)
-			
+
 			continuation = None
 
 		rtn_chats.extend(chats)
-
-		tsp = chats[-1]
-		print("end:"+str(end_minute)+", time:"+tsp.timestamp_text+", list_len:"+str(len(rtn_chats)))
+		if len(chats) > 0:
+			tsp = chats[-1]
+			print("end:"+str(end_minute)+", time:"+tsp.timestamp_text+", list_len:"+str(len(rtn_chats)))
 		# break
 		time.sleep(0.01)
 	print("start:"+str(start_minute)+", Worker END")
@@ -114,7 +114,7 @@ def remove_surplus_from_chats(chats=None, end_minute=None):
 	# find just end_minute
 	while(True):
 		index = int((left+right)/2)
-		
+
 		chat = chats[index]
 		m = int(chat.minutes())
 		dt = chat.datetime()
@@ -136,17 +136,18 @@ def remove_surplus_from_chats(chats=None, end_minute=None):
 			left = index
 		if right - left == 1:
 			break
-	
+
 
 	# find boundary between end_minute-1 and end_minute
-	for i in reversed(range(index)):
+	while index > 0:
 		chat = chats[index]
 		m = int(chat.minutes())
 		if m < end_minute:
-			index = i
+			index += 1
 			break
+		index -= 1
 
-	length = len(chats) 
+	length = len(chats)
 	del chats[index:length]
 
 	print("end_min:"+str(end_minute)+", Remove Surplus end")
