@@ -16,15 +16,15 @@ class LiveChat:
 		self.author_name = None
 		self.author_photo = None
 		self.author_external_channel_id = ""
-		if "message" in data:
+		if "message" in data and "simpleText" in data["message"]:
 			self.message = data["message"]["simpleText"]
-		if "authorName" in data:
+		if "authorName" in data and "simpleText" in data["authorName"]:
 			self.author_name = data["authorName"]["simpleText"]
-		if "authorPhoto" in data:
+		if "authorPhoto" in data and "thumbnails" in data["authorPhoto"]:
 			self.author_photo = data["authorPhoto"]["thumbnails"]
 		if "authorExternalChannelId" in data:
 			self.author_external_channel_id = data["authorExternalChannelId"]
-			
+
 
 	def datetime(self):
 		timestamp_text = self.timestamp_text
