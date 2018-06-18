@@ -16,22 +16,10 @@ from scraping import live_chat_replay_page as chat_page
 chat_list = None
 
 def plot(video_id=None):
-
 	s_time = time.time()
-
 	make_chat_list(video_id)
-	
-	d = time.time() - s_time
-	print("s-w:"+str(d))
-
-	global chat_list
-	chat_freq_data = count_chats_by_time(chat_list=chat_list)
-
 	d = time.time() - s_time
 	print("s-e:"+str(d))
-
-
-	display_graph(chat_freq_data, video_id, "bar")
 
 
 def make_chat_list(video_id=None):
@@ -46,16 +34,16 @@ def make_chat_list(video_id=None):
 		if continuation is None:
 			print("continuation is Invalid or This is End")
 			break
-		
+
 		continuation, chats = chat_page.get_contents(continuation=continuation)
-		
+
 		if chats is None or len(chats) == 0:
 			print("chat is End")
 			break
-		
+
 		chat_list.extend(chats)
 		# break
-		
+
 		tsp = chats[-1]
 		print("time:"+tsp.timestamp_text+", list_len:"+str(len(chat_list)))
 
@@ -70,6 +58,7 @@ def display_graph(data=None, title="No Name", kind="bar"):
 
 	data.plot(title=title, kind=kind)
 	plt.show()
+	plt.close()
 
 	print(kind)
 
@@ -83,7 +72,7 @@ def count_chats_by_time(chat_list=None):
 
 	for chat in chat_list:
 
-		# date_time = chat.datetime()		
+		# date_time = chat.datetime()
 		# t_tuple = date_time.timetuple()
 
 		# h = t_tuple[3]
