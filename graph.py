@@ -5,6 +5,8 @@ import datetime
 import dateutil.parser as timeparser
 
 import numpy as np
+import matplotlib
+# matplotlib.use("agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 from pandas import Series
@@ -13,16 +15,13 @@ from scraping import live_chat_replay_scraper as chat_scraper
 
 
 chat_list = None
-
+title = ""
 def plot(video_id=None):
 	s_time = time.time()
-	video_details = chat_scraper.scraping_video_details(video_id=video_id)
 	title = video_id
 
 	global chat_list
 	chat_list = chat_scraper.make_chat_list(video_id)
-
-	chat_freq_data = count_chats_by_minutes(chat_list=chat_list)
 
 	d = time.time() - s_time
 	print("s-e:"+str(d))
@@ -38,7 +37,6 @@ def display_graph(data=None, title="No Name", kind="bar"):
 	data.plot(title=title, kind=kind)
 	plt.show(block=False)
 
-	print(kind)
 	return True
 
 
