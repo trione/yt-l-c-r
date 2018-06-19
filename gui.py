@@ -48,6 +48,7 @@ def callback_finished_scraping_task(future):
 	running_state_label.config(background="green")
 
 
+
 root = Tk()
 root.title(u"live_chat_heat graph viewer")
 root.geometry("400x300")
