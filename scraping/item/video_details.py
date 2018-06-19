@@ -23,5 +23,3 @@ class VideoDetails:
 
 		except Exception as e:
 			raise e
-
-
