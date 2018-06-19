@@ -22,11 +22,9 @@ def make_chat_list(video_id=None):
 
 	# make continuation list from starting minutes
 	video_details = scraping_video_details(video_id=video_id)
-	print(video_details)
+	print(video_details.title)
 	seconds = int(video_details.length_seconds)
 	minutes = int(seconds / 60)
-
-
 	start_min = 0
 	d = 10
 	end_min = start_min + d
@@ -42,8 +40,6 @@ def make_chat_list(video_id=None):
 		end_min = end_min + d
 		if end_min > minutes:
 			end_min = rear_min
-
-	print("Future Appended")
 
 	# wait done worker
 	done_num = 0
@@ -85,7 +81,7 @@ def run_making_chat_list_worker(video_id=None, start_minute=None, end_minute=Non
 		current_rear_chat = chats[-1]
 		current_minute = int(current_rear_chat.minutes())
 
-		if current_minute == int(end_minute):
+		if current_minute >= int(end_minute):
 			front_chat = chats[0]
 			f_min = int(front_chat.minutes())
 			if f_min == end_minute:
