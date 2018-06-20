@@ -18,7 +18,6 @@ chat_list = None
 title = ""
 def plot(video_id=None):
 	s_time = time.time()
-	title = video_id
 
 	global chat_list
 	chat_list = chat_scraper.make_chat_list(video_id)
@@ -26,8 +25,10 @@ def plot(video_id=None):
 	d = time.time() - s_time
 	print("s-e:"+str(d))
 
+	global title
+	title = video_id
 
-def display_graph(data=None, title="No Name", kind="bar"):
+def display_graph(data=None, title=title, kind="bar"):
 	if data is None :
 		global chat_list
 		if chat_list is None: return None
@@ -39,6 +40,8 @@ def display_graph(data=None, title="No Name", kind="bar"):
 
 	return True
 
+def is_graph_drawable():
+	return chat_list is not None
 
 def count_chats_by_minutes(chat_list=None):
 	if chat_list is None: return None
