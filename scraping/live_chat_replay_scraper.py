@@ -24,22 +24,21 @@ def make_chat_list(video_id=None):
 	video_details = scraping_video_details(video_id=video_id)
 	print(video_details.title)
 	seconds = int(video_details.length_seconds)
-	minutes = int(seconds / 60)
-	start_min = 0
-	d = 10
-	end_min = start_min + d
-	rear_min = minutes + 1
+	start_sec = 0
+	d_sec = 10 * 60 # 10 minutes
+	end_sec = start_sec + d_sec
+	rear_sec = seconds
 
-	# run worker
+	# make running worker
 	ftrs = []
 	executor = futures.ThreadPoolExecutor()
-	while(start_min < rear_min):
-		ftr = executor.submit(run_making_chat_list_worker, video_id, start_min, end_min)
+	while(start_sec < rear_sec):
+		ftr = executor.submit(run_making_chat_list_worker, video_id, start_sec, end_sec)
 		ftrs.append(ftr)
-		start_min = end_min
-		end_min = end_min + d
-		if end_min > minutes:
-			end_min = rear_min
+		start_sec = end_sec
+		end_sec = end_sec + d_sec
+		if end_sec > seconds:
+			end_sec = rear_sec
 
 	# wait done worker
 	done_num = 0
@@ -62,31 +61,29 @@ def make_chat_list(video_id=None):
 	return chat_list
 
 
-def run_making_chat_list_worker(video_id=None, start_minute=None, end_minute=None):
+def run_making_chat_list_worker(video_id=None, start_second=None, end_second=None):
 	rtn_chats = []
-
+	start_minute = int(start_second / 60)
+	end_minute = int(end_second / 60)
+	current_rear_second = start_second
+	
 	page = video_page.open_by_id_minutes(video_id, start_minute)
 	continuation = video_page.pick_out_chat_continuation(page)
+	while(continuation is not None and current_rear_second < end_second-1):
+		next_continuation, chats = chat_page.get_contents(continuation=continuation)
 
-	while(continuation is not None):
-		continuation, chats = chat_page.get_contents(continuation=continuation)
+		if next_continuation is None:
+			print("Continue: next continuation is None")
+			continue
+		continuation = next_continuation
 
-		if continuation is None:
-			print("continuation is Invalid or This is End")
-			break
-		if chats is None or len(chats) == 0:
-			print("chat is End")
-			break
-
-		current_rear_chat = chats[-1]
-		current_minute = int(current_rear_chat.minutes())
-
-		if current_minute >= int(end_minute):
+		current_rear_second = int(chats[-1].seconds())
+		if current_rear_second >= int(end_second):
 			front_chat = chats[0]
 			f_min = int(front_chat.minutes())
 			if f_min == end_minute:
 				chats = []
-			else :
+			elif f_min == end_minute-1:
 				chats = remove_surplus_from_chats(chats, end_minute)
 
 			continuation = None
@@ -97,6 +94,7 @@ def run_making_chat_list_worker(video_id=None, start_minute=None, end_minute=Non
 			print("end:"+str(end_minute)+", time:"+tsp.timestamp_text+", list_len:"+str(len(rtn_chats)))
 		# break
 		time.sleep(0.01)
+
 	print("start:"+str(start_minute)+", Worker END")
 	return rtn_chats
 
