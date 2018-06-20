@@ -46,7 +46,9 @@ def cancel_action(event):
 def callback_finished_scraping_task(future):
 	running_state_val.set("Runnable next")
 	running_state_label.config(background="green")
-
+	if chat_graph.is_graph_drawable() :
+		graph_drawable_state_val.set("Drawable")
+		graph_drawable_state_label.config(background="green")
 
 
 root = Tk()
@@ -69,6 +71,11 @@ running_state_val = StringVar()
 running_state_val.set("No running now")
 running_state_label = ttk.Label(content, width=16, textvariable=running_state_val)
 
+graph_drawable_state_val = StringVar()
+graph_drawable_state_val.set("Not drawable")
+graph_drawable_state_label = ttk.Label(content, width=16, textvariable=graph_drawable_state_val)
+graph_drawable_state_label.config(background="red")
+
 # Popup Menu
 entry_right_click_popup = Menu(root, tearoff=0)
 entry_right_click_popup.add_command(label="Cut")
@@ -88,8 +95,8 @@ run_button.bind(left_clicked, entry_video_id)
 show_graph_btn = ttk.Button(content, text="Graph")
 show_graph_btn.bind(left_clicked, show_chat_freq_graph)
 
-cansel_button = ttk.Button(content, text="Cansel")
-cansel_button.bind(left_clicked, cancel_action)
+#cansel_button = ttk.Button(content, text="Cansel")
+#cansel_button.bind(left_clicked, cancel_action)
 
 # Layout
 # column = 1
@@ -97,10 +104,11 @@ label.grid(column=1, row=1, sticky=E)
 # column = 2
 vid_label.grid(column=2, row=1, sticky=(W, E))
 running_state_label.grid(column=2, row=2, sticky=(W, E))
+graph_drawable_state_label.grid(column=2, row=4, sticky=(W, E))
 # column = 3
 video_id_entry.grid(column=3, row=1, sticky=(W, E))
 run_button.grid(column=3, row=2, sticky=W)
-cansel_button.grid(column=3, row=3, sticky=W)
+#cansel_button.grid(column=3, row=3, sticky=W)
 show_graph_btn.grid(column=3, row=4, sticky=W)
 
 
