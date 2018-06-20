@@ -33,6 +33,10 @@ class LiveChat:
 		else :
 			return timeparser.parse(timestamp_text)
 
+	def seconds(self):
+		dt = self.datetime()
+		tt = dt.timetuple()
+		return tt[3] * 3600 + tt[4] * 60 + tt[5]
 
 	def minutes(self):
 		dt = self.datetime()
