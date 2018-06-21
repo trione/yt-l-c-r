@@ -32,15 +32,13 @@ def make_chat_list(video_id=None):
 	# make running worker
 	ftrs = []
 	executor = futures.ThreadPoolExecutor()
-	is_rear_worker = False
 	while(start_sec < rear_sec):
-		ftr = executor.submit(run_making_chat_list_worker, video_id, start_sec, end_sec, is_rear_worker)
+		ftr = executor.submit(run_making_chat_list_worker, video_id, start_sec, end_sec)
 		ftrs.append(ftr)
 		start_sec = end_sec
 		end_sec = end_sec + d_sec
 		if end_sec > seconds:
 			end_sec = rear_sec
-			is_rear_worker = True
 
 	# wait done worker
 	done_num = 0
@@ -63,7 +61,7 @@ def make_chat_list(video_id=None):
 	return chat_list
 
 
-def run_making_chat_list_worker(video_id=None, start_second=None, end_second=None, is_rear_woker=False):
+def run_making_chat_list_worker(video_id=None, start_second=None, end_second=None):
 	rtn_chats = []
 	start_minute = int(start_second / 60)
 	end_minute = int(end_second / 60)
@@ -74,20 +72,15 @@ def run_making_chat_list_worker(video_id=None, start_second=None, end_second=Non
 	while(continuation is not None and current_rear_second < end_second-1):
 		next_continuation, chats = chat_page.get_contents(continuation=continuation)
 
-		if next_continuation is None and end_second >= current_rear_second:
-			time.sleep(0.01)
+		is_empty_contents = next_continuation is None and chats is None
+		if is_empty_contents and end_second >= current_rear_second:
+			time.sleep(3)
 			continue
 		continuation = next_continuation
 
 		current_rear_second = int(chats[-1].seconds())
-		if current_rear_second >= end_second and not is_rear_woker:
-			front_chat = chats[0]
-			f_min = int(front_chat.minutes())
-			if f_min == end_minute:
-				chats = []
-			elif f_min == end_minute-1:
-				chats = remove_surplus_from_chats(chats, end_minute)
-
+		if current_rear_second >= end_second and continuation is not None:
+			chats = remove_surplus_from_chats(chats, end_minute)
 			continuation = None
 
 		rtn_chats.extend(chats)
