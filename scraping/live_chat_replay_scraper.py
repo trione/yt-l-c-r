@@ -41,16 +41,13 @@ def make_chat_list(video_id=None):
 			end_sec = rear_sec
 
 	# wait done worker
-	done_num = 0
-	ftrs_num = len(ftrs)
-	while ftrs_num != done_num:
-		done_num = 0
-		time.sleep(5)
+	is_finished = False
+	while not is_finished:
+		time.sleep(3)
+		is_finished = True
 		for ftr in ftrs:
-			if ftr.done():
-				done_num = done_num + 1
-
-		print("done:"+str(done_num)+"/"+str(ftrs_num))
+			if not ftr.done():
+				is_finished = False
 
 	# get result of working
 	chat_list = []
