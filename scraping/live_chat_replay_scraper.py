@@ -95,7 +95,6 @@ def run_making_chat_list_worker(video_id=None, start_second=None, end_second=Non
 
 
 def remove_surplus_from_chats(chats=None, end_minute=None):
-	print("end_min:"+str(end_minute)+", Remove Surplus start")
 	left = 0
 	right = len(chats)-1
 	index = None
@@ -110,14 +109,8 @@ def remove_surplus_from_chats(chats=None, end_minute=None):
 		tt = dt.timetuple()
 		s = tt[5]
 
-		ri = chats[right]
-		rim = int(ri.minutes())
-		le = chats[left]
-		lem = int(le.minutes())
-		print("end_min:"+str(end_minute)+", index:"+str(index)+", m:"+str(m)+", l:r="+str(left)+":"+str(right)+", lm:rm="+str(lem)+":"+str(rim))
 		# just end_minute
 		if m == end_minute and s == 0:
-			print("Find Just End Min")
 			break
 		elif m >= end_minute and s > 0:
 			right = index
@@ -139,5 +132,4 @@ def remove_surplus_from_chats(chats=None, end_minute=None):
 	length = len(chats)
 	del chats[index:length]
 
-	print("end_min:"+str(end_minute)+", Remove Surplus end")
 	return chats
