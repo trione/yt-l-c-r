@@ -57,6 +57,11 @@ def count_chats_by_minutes(chat_list=None):
 
 	return df
 
+def set_chat_data(chats=None):
+	if chats is None: return None
+	global chat_list
+	chat_list = chats
+
 # input video_id from command line
 # $ python graph.py [youtube video_id]
 if __name__ == '__main__':
