@@ -6,6 +6,7 @@ from tkinter import *
 from tkinter import ttk
 
 import graph as chat_graph
+import scraping.live_chat_replay_scraper as chat_scraper
 
 executor = futures.ThreadPoolExecutor()
 future = None
@@ -23,7 +24,6 @@ def show_entry_popup(event):
 	entry_right_click_popup.entryconfigure("Paste", command=lambda: w.event_generate("<<Paste>>"))
 	entry_right_click_popup.tk.call("tk_popup", entry_right_click_popup, event.x_root, event.y_root)
 
-
 # button actions
 def entry_video_id(event):
 	video_id = video_id_entry.get()
@@ -31,7 +31,7 @@ def entry_video_id(event):
 	global executor
 	global future
 	if future is None or future.done():
-		future = executor.submit(chat_graph.plot, video_id)
+		future = executor.submit(chat_scraper.make_chat_list, video_id)
 		future.add_done_callback(callback_finished_scraping_task)
 		running_state_val.set("Running now")
 		running_state_label.config(background="red")
@@ -46,6 +46,8 @@ def cancel_action(event):
 def callback_finished_scraping_task(future):
 	running_state_val.set("Runnable next")
 	running_state_label.config(background="green")
+	chat_list = future.result()
+	chat_graph.set_chat_data(chat_list)
 	if chat_graph.is_graph_drawable() :
 		graph_drawable_state_val.set("Drawable")
 		graph_drawable_state_label.config(background="green")
