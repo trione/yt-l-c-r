@@ -11,6 +11,40 @@ import scraping.live_chat_replay_scraper as chat_scraper
 executor = futures.ThreadPoolExecutor()
 future = None
 
+chat_list = []
+# create chat list window
+def create_chat_list_window(event):
+	window = Toplevel()
+	window.title("Chat List")
+	window.geometry("400x300")
+	winfrm = ttk.Frame(window)
+	winfrm.pack(fill='both', expand=True)
+
+	columns = {}
+	columns["time"] = "timestampText"
+	columns["user"] = "authorName"
+	columns["message"] = "message"
+	chat_columns = tuple(columns.keys())
+	tree = ttk.Treeview(winfrm, columns=chat_columns, show='headings')
+	vsb = ttk.Scrollbar(winfrm, orient="vertical", command=tree.yview)
+	hsb = ttk.Scrollbar(winfrm, orient="horizontal", command=tree.xview)
+	tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+	tree.grid(column=0, row=0, sticky=(N, W, E, S))
+	vsb.grid(column=1, row=0, sticky=(N, S))
+	hsb.grid(column=0, row=1, sticky=(W, E))
+	winfrm.grid_columnconfigure(0, weight=1)
+	winfrm.grid_rowconfigure(0, weight=1)
+	for col in chat_columns:
+		w=len(col)*10
+		tree.column(col, width=w)
+		tree.heading(col, text=col)
+
+	for chat in chat_list:
+		record = tuple([chat.data[v] for v in columns.values()])
+		try:
+			tree.insert("", "end", tags=chat_columns, values=record)
+		except Exception as e:
+			pass
 
 # window button actions
 def close_window():
@@ -46,6 +80,7 @@ def cancel_action(event):
 def callback_finished_scraping_task(future):
 	running_state_val.set("Runnable next")
 	running_state_label.config(background="green")
+	global chat_list
 	chat_list = future.result()
 	chat_graph.set_chat_data(chat_list)
 	if chat_graph.is_graph_drawable() :
@@ -58,7 +93,7 @@ root.title(u"live_chat_heat graph viewer")
 root.geometry("400x300")
 root.protocol("WM_DELETE_WINDOW", close_window)
 
-content = ttk.Frame(root, padding="3 4 12 12")
+content = ttk.Frame(root, padding="3 5 12 12")
 content.grid(column=0, row=0, sticky=(N, W, E, S))
 content.columnconfigure(0, weight=1)
 content.rowconfigure(0, weight=1)
@@ -97,6 +132,9 @@ run_button.bind(left_clicked, entry_video_id)
 show_graph_btn = ttk.Button(content, text="Graph")
 show_graph_btn.bind(left_clicked, show_chat_freq_graph)
 
+create_chat_list_window_btn = ttk.Button(content, text="Show Chats")
+create_chat_list_window_btn.bind(left_clicked, create_chat_list_window)
+
 #cansel_button = ttk.Button(content, text="Cansel")
 #cansel_button.bind(left_clicked, cancel_action)
 
@@ -112,7 +150,7 @@ video_id_entry.grid(column=3, row=1, sticky=(W, E))
 run_button.grid(column=3, row=2, sticky=W)
 #cansel_button.grid(column=3, row=3, sticky=W)
 show_graph_btn.grid(column=3, row=4, sticky=W)
-
+create_chat_list_window_btn.grid(column=3, row=5, sticky=W)
 
 for child in content.winfo_children(): child.grid_configure(padx=15, pady=15)
 
