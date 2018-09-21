@@ -5,7 +5,9 @@ import concurrent.futures as futures
 from scraping import video_page
 from scraping import live_chat_replay_page as chat_page
 
-
+CHAT_WORKERS = []
+IS_FINISHED = False
+FINISH_COUNTER = 0
 def scraping_video_details(video_id=None):
 	if video_id is None: return None
 	p = video_page.open_by_id(video_id=video_id)
@@ -16,6 +18,13 @@ def scraping_video_details(video_id=None):
 
 	return details
 
+def worker_finish_callback(future):
+	global FINISH_COUNTER
+	global CHAT_WORKERS
+	global IS_FINISHED
+	FINISH_COUNTER += 1
+	IS_FINISHED = (FINISH_COUNTER == len(CHAT_WORKERS))
+	print("fin_cnt:"+str(FINISH_COUNTER)+"/"+str(len(CHAT_WORKERS)))
 
 def make_chat_list(video_id=None):
 	if video_id is None: return None
@@ -30,29 +39,30 @@ def make_chat_list(video_id=None):
 	rear_sec = seconds
 
 	# make running worker
-	ftrs = []
+	global CHAT_WORKERS
+	CHAT_WORKERS = []
 	executor = futures.ThreadPoolExecutor()
 	while(start_sec < rear_sec):
-		ftr = executor.submit(run_making_chat_list_worker, video_id, start_sec, end_sec)
-		ftrs.append(ftr)
+		chat_worker = executor.submit(run_making_chat_list_worker, video_id, start_sec, end_sec)
+		chat_worker.add_done_callback(worker_finish_callback)
+		CHAT_WORKERS.append(chat_worker)
 		start_sec = end_sec
 		end_sec = end_sec + d_sec
 		if end_sec > seconds:
 			end_sec = rear_sec
 
 	# wait done worker
-	is_finished = False
-	while not is_finished:
-		time.sleep(3)
-		is_finished = True
-		for ftr in ftrs:
-			if not ftr.done():
-				is_finished = False
+	global IS_FINISHED
+	global FINISH_COUNTER
+	IS_FINISHED = False
+	FINISH_COUNTER = 0
+	while not IS_FINISHED:
+		pass
 
 	# get result of working
 	chat_list = []
-	for ftr in ftrs:
-		chats = ftr.result()
+	for chat_worker in CHAT_WORKERS:
+		chats = chat_worker.result()
 		chat_list.extend(chats)
 
 	return chat_list
@@ -66,16 +76,26 @@ def run_making_chat_list_worker(video_id=None, start_second=None, end_second=Non
 
 	page = video_page.open_by_id_minutes(video_id, start_minute)
 	continuation = video_page.pick_out_chat_continuation(page)
+	cntn_cnt = 0
 	while(continuation is not None and current_rear_second < end_second-1):
 		next_continuation, chats = chat_page.get_contents(continuation=continuation)
 
 		is_empty_contents = next_continuation is None and chats is None
 		if is_empty_contents and end_second >= current_rear_second:
+			cntn_cnt += 1
+			if cntn_cnt >= 5:
+				break
 			time.sleep(3)
 			continue
+		cntn_cnt = 0
 		continuation = next_continuation
 
-		current_rear_second = int(chats[-1].seconds())
+		if chats is not None:
+			current_rear_second = int(chats[-1].seconds())
+		else:
+			current_rear_second = end_second
+			chats = []
+
 		if current_rear_second >= end_second and continuation is not None:
 			chats = remove_surplus_from_chats(chats, end_minute)
 			continuation = None
@@ -92,6 +112,9 @@ def run_making_chat_list_worker(video_id=None, start_second=None, end_second=Non
 
 
 def remove_surplus_from_chats(chats=None, end_minute=None):
+	if chats is None or len(chats) == 0:
+		return []
+
 	left = 0
 	right = len(chats)-1
 	index = None
