@@ -65,10 +65,17 @@ def pick_live_chat_items_from_continuation_json(json_data=None):
 		if "liveChatReplayContinuationData" in cont:
 			next_continuation = cont["liveChatReplayContinuationData"]["continuation"]
 			break
+		elif "playerSeekContinuationData" in cont:
+			next_continuation = cont['playerSeekContinuationData']['continuation']
+			break
 
 	# liveChatContinuation > actions
 	# find chat data in actions json dict
-	actions = liveChatCont["actions"]
+	actions = None
+	if "actions" in liveChatCont:
+		actions = liveChatCont["actions"]
+	if actions is None:
+		return next_continuation, None
 
 	chat_items = []
 
