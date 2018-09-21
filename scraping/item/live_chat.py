@@ -3,28 +3,38 @@ import datetime
 import dateutil.parser as timeparser
 
 class LiveChat:
+	ID = "id"
+	TSU = "timestampUsec"
+	TST = "timestampText"
+	MSG = "message"
+	ANAME = "authorName"
+	APHOTO = "authorPhoto"
+	AECI = "authorExternalChannelId"
+	STXT = "simpleText"
+	THMBS = "thumbnails"
 
 	def __init__(self, data, video_id=""):
-		self.data = data
+		d = {}
 		self.video_id = video_id
 
-		self.id = data["id"]
-		self.timestamp_usec = data["timestampUsec"]
-		self.timestamp_text = data["timestampText"]["simpleText"]
+		self.id = d[self.ID] = data[self.ID]
+		self.timestamp_usec = d[self.TSU] = data[self.TSU]
+		self.timestamp_text = d[self.TST] = data[self.TST][self.STXT]
 
-		self.message = ""
-		self.author_name = None
-		self.author_photo = None
-		self.author_external_channel_id = ""
-		if "message" in data and "simpleText" in data["message"]:
-			self.message = data["message"]["simpleText"]
-		if "authorName" in data and "simpleText" in data["authorName"]:
-			self.author_name = data["authorName"]["simpleText"]
-		if "authorPhoto" in data and "thumbnails" in data["authorPhoto"]:
-			self.author_photo = data["authorPhoto"]["thumbnails"]
-		if "authorExternalChannelId" in data:
-			self.author_external_channel_id = data["authorExternalChannelId"]
+		self.message = d[self.MSG] = ""
+		self.author_name = d[self.ANAME] = None
+		self.author_photo = d[self.APHOTO] = None
+		self.author_external_channel_id = d[self.AECI] = ""
+		if self.MSG in data and self.STXT in data[self.MSG]:
+			self.message = d[self.MSG]= data[self.MSG][self.STXT]
+		if self.ANAME in data and self.STXT in data[self.ANAME]:
+			self.author_name = d[self.ANAME] = data[self.ANAME][self.STXT]
+		if self.APHOTO in data and self.THMBS in data[self.APHOTO]:
+			self.author_photo = d[self.APHOTO] = data[self.APHOTO][self.THMBS]
+		if self.AECI in data:
+			self.author_external_channel_id = d[self.AECI] = data[self.AECI]
 
+		self.data = d
 
 	def datetime(self):
 		timestamp_text = self.timestamp_text
