@@ -20,7 +20,6 @@ class LiveChat:
 		self.id = d[self.ID] = data[self.ID]
 		self.timestamp_usec = d[self.TSU] = data[self.TSU]
 		self.timestamp_text = d[self.TST] = data[self.TST][self.STXT]
-
 		self.message = d[self.MSG] = ""
 		self.author_name = d[self.ANAME] = None
 		self.author_photo = d[self.APHOTO] = None
@@ -38,6 +37,8 @@ class LiveChat:
 
 	def datetime(self):
 		timestamp_text = self.timestamp_text
+		if '-' in timestamp_text:
+			timestamp_text = "00:00"
 		if len(timestamp_text) <= 5:
 			return datetime.datetime.strptime(timestamp_text, "%M:%S")
 		else :
