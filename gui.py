@@ -40,7 +40,7 @@ def create_chat_list_window(event):
 		tree.heading(col, text=col)
 
 	for chat in chat_list:
-		record = tuple([chat.data[v] for v in columns.values()])
+		record = (chat.timestamp_text, chat.author_name, chat.message)
 		try:
 			tree.insert("", "end", tags=chat_columns, values=record)
 		except Exception as e:
